@@ -114,6 +114,7 @@
     background:rgba(5,5,10,0.88);
     z-index:10;
     padding:24px;
+    overflow-y:auto;
   }
   #overlay h1{
     color:var(--neon);
@@ -135,6 +136,46 @@
     color:var(--neon2);
     text-shadow:0 0 10px var(--neon2);
     margin:0 0 14px 0;
+  }
+  #leaderboard{
+    width:100%;
+    max-width:280px;
+    margin:4px 0 6px 0;
+  }
+  #leaderboard h3{
+    margin:0 0 8px 0;
+    font-size:13px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--neon);
+    opacity:0.8;
+  }
+  #leaderboard-list{
+    margin:0; padding:0;
+    list-style:none;
+    counter-reset:rank;
+    display:flex; flex-direction:column; gap:4px;
+  }
+  #leaderboard-list li{
+    counter-increment:rank;
+    display:flex; justify-content:space-between;
+    font-size:14px;
+    color:#cfd8dc;
+    padding:4px 10px;
+    border-radius:8px;
+    background:rgba(255,255,255,0.03);
+  }
+  #leaderboard-list li::before{
+    content:counter(rank) ".";
+    margin-right:8px;
+    opacity:0.6;
+  }
+  #leaderboard-list li.you{
+    color:var(--neon2);
+    text-shadow:0 0 6px var(--neon2);
+    background:rgba(255,59,212,0.12);
+    border:1px solid rgba(255,59,212,0.4);
+    font-weight:bold;
   }
   #start-btn{
     margin-top:22px;
@@ -170,6 +211,10 @@
       <p id="overlay-sub">Vernichte die Invasoren, bevor sie dich erreichen.</p>
       <p id="overlay-sub2">Steuerung: Links/Rechts halten zum Bewegen, FEUER zum Schießen.</p>
       <div id="overlay-msg" class="big-msg hidden"></div>
+      <div id="leaderboard" class="hidden">
+        <h3>Bestenliste</h3>
+        <ol id="leaderboard-list"></ol>
+      </div>
       <button id="start-btn">START</button>
     </div>
   </div>
@@ -181,6 +226,6 @@
   </div>
 </div>
 
-<script src="game.js?v=4"></script>
+<script src="game.js?v=5"></script>
 </body>
 </html>

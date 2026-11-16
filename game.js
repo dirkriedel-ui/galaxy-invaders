@@ -12,6 +12,8 @@
   const overlaySub = document.getElementById("overlay-sub");
   const overlaySub2 = document.getElementById("overlay-sub2");
   const startBtn = document.getElementById("start-btn");
+  const leaderboard = document.getElementById("leaderboard");
+  const leaderboardList = document.getElementById("leaderboard-list");
   const leftBtn = document.getElementById("left-btn");
   const rightBtn = document.getElementById("right-btn");
   const fireBtn = document.getElementById("fire-btn");
@@ -29,6 +31,91 @@
   }
   window.addEventListener("resize", resize);
   window.addEventListener("orientationchange", () => setTimeout(resize, 200));
+
+  // ---------- Sound (synthesized, no audio files needed) ----------
+  let audioCtx = null;
+  function getAudioCtx() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }
+
+  function playTone({ freq, endFreq, duration, type = "square", volume = 0.18, delay = 0 }) {
+    const ac = getAudioCtx();
+    if (!ac) return;
+    const t0 = ac.currentTime + delay;
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    if (endFreq !== undefined) {
+      osc.frequency.exponentialRampToValueAtTime(Math.max(endFreq, 1), t0 + duration);
+    }
+    gain.gain.setValueAtTime(volume, t0);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+    osc.connect(gain).connect(ac.destination);
+    osc.start(t0);
+    osc.stop(t0 + duration + 0.02);
+  }
+
+  function playStartSound() {
+    [220, 330, 440, 660, 880].forEach((f, i) => {
+      playTone({ freq: f, duration: 0.13, type: "square", volume: 0.15, delay: i * 0.07 });
+    });
+  }
+
+  function playHitSound() {
+    playTone({ freq: 900, endFreq: 110, duration: 0.15, type: "sawtooth", volume: 0.16 });
+    const ac = getAudioCtx();
+    if (!ac) return;
+    const len = Math.floor(ac.sampleRate * 0.12);
+    const buffer = ac.createBuffer(1, len, ac.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const noise = ac.createBufferSource();
+    noise.buffer = buffer;
+    const noiseGain = ac.createGain();
+    noiseGain.gain.setValueAtTime(0.18, ac.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.12);
+    noise.connect(noiseGain).connect(ac.destination);
+    noise.start();
+  }
+
+  // ---------- Highscores ----------
+  const HIGHSCORE_KEY = "galaxyInvadersHighscores";
+  const MAX_HIGHSCORES = 5;
+
+  function loadHighscores() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(HIGHSCORE_KEY));
+      return Array.isArray(raw) ? raw : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function addHighscore(score) {
+    const list = loadHighscores();
+    const entry = { score, date: new Date().toLocaleDateString("de-DE") };
+    list.push(entry);
+    list.sort((a, b) => b.score - a.score);
+    const top = list.slice(0, MAX_HIGHSCORES);
+    try { localStorage.setItem(HIGHSCORE_KEY, JSON.stringify(top)); } catch {}
+    return { list: top, rank: top.indexOf(entry) };
+  }
+
+  function renderLeaderboard(list, highlightRank) {
+    leaderboardList.innerHTML = "";
+    list.forEach((entry, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = "<span>" + entry.score + " Punkte</span><span>" + entry.date + "</span>";
+      if (i === highlightRank) li.classList.add("you");
+      leaderboardList.appendChild(li);
+    });
+    leaderboard.classList.remove("hidden");
+  }
 
   // ---------- Game state ----------
   const MAX_LIVES = 3;
@@ -103,6 +190,7 @@
   }
 
   function startGame() {
+    playStartSound();
     state.running = true;
     state.score = 0;
     state.level = 1;
@@ -144,6 +232,8 @@
     overlaySub.textContent = "Punktzahl: " + state.score;
     overlaySub2.textContent = won ? "Großartig gespielt, Kommandant!" : "Versuch es noch einmal.";
     startBtn.textContent = "NOCHMAL";
+    const { list, rank } = addHighscore(state.score);
+    renderLeaderboard(list, rank);
     overlay.classList.remove("hidden");
   }
 
@@ -267,6 +357,7 @@
           b.y = -9999;
           state.score += en.points;
           spawnParticles(en.x + en.w / 2, en.y + en.h / 2, "#39ff88", 14);
+          playHitSound();
           updateHud();
         }
       });

@@ -1,5 +1,5 @@
-const CACHE_NAME = "galaxy-invaders-v4";
-const ASSETS = ["./", "./index.html", "./game.js?v=4", "./manifest.json", "./icon.png"];
+const CACHE_NAME = "galaxy-invaders-v5";
+const ASSETS = ["./", "./index.html", "./game.js?v=5", "./manifest.json", "./icon.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
