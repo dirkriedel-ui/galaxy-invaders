@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Invaders">
+<meta name="theme-color" content="#000000">
+<title>Galaxy Invaders</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+  :root{
+    --neon:#39ff88;
+    --neon2:#ff3bd4;
+    --bg:#05050a;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{
+    margin:0; padding:0; width:100%; height:100%;
+    background:var(--bg); overflow:hidden;
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    touch-action:none;
+    user-select:none;
+  }
+  #game-wrap{
+    position:fixed; inset:0;
+    display:flex; flex-direction:column;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  #hud{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:8px 16px;
+    color:var(--neon);
+    font-size:16px;
+    letter-spacing:1px;
+    text-shadow:0 0 6px var(--neon);
+    z-index:5;
+  }
+  #hud .lives{ color:var(--neon2); text-shadow:0 0 6px var(--neon2); }
+  #canvas-holder{
+    position:relative;
+    flex:1;
+    min-height:0;
+  }
+  canvas{
+    position:absolute; top:0; left:0;
+    width:100%; height:100%;
+    display:block;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(57,255,136,0.06), transparent 60%),
+      #05050a;
+  }
+  #controls{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 18px calc(14px + env(safe-area-inset-bottom)) 18px;
+    gap:10px;
+    z-index:5;
+  }
+  .ctrl-btn{
+    flex:1;
+    max-width:120px;
+    height:64px;
+    border-radius:16px;
+    border:1px solid rgba(57,255,136,0.5);
+    background:rgba(57,255,136,0.08);
+    color:var(--neon);
+    font-size:26px;
+    display:flex; align-items:center; justify-content:center;
+    -webkit-user-select:none;
+  }
+  .ctrl-btn.active{
+    background:rgba(57,255,136,0.3);
+  }
+  #fire-btn{
+    width:84px; height:84px; max-width:84px;
+    border-radius:50%;
+    border:1px solid rgba(255,59,212,0.6);
+    background:rgba(255,59,212,0.12);
+    color:var(--neon2);
+    font-size:14px;
+    font-weight:bold;
+    letter-spacing:1px;
+  }
+  #fire-btn.active{
+    background:rgba(255,59,212,0.35);
+  }
+  #overlay{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    color:#fff;
+    background:rgba(5,5,10,0.88);
+    z-index:10;
+    padding:24px;
+  }
+  #overlay h1{
+    color:var(--neon);
+    text-shadow:0 0 12px var(--neon);
+    font-size:clamp(28px,8vw,44px);
+    margin:0 0 6px 0;
+    letter-spacing:2px;
+  }
+  #overlay p{ opacity:0.8; margin:4px 0; font-size:14px; }
+  #overlay .big-msg{
+    font-size:clamp(20px,6vw,30px);
+    color:var(--neon2);
+    text-shadow:0 0 10px var(--neon2);
+    margin:0 0 14px 0;
+  }
+  #start-btn{
+    margin-top:22px;
+    padding:14px 34px;
+    font-size:18px;
+    border-radius:30px;
+    border:2px solid var(--neon);
+    background:transparent;
+    color:var(--neon);
+    text-shadow:0 0 6px var(--neon);
+    box-shadow:0 0 14px rgba(57,255,136,0.4);
+  }
+  #start-btn:active{ background:rgba(57,255,136,0.2); }
+  .hidden{ display:none !important; }
+</style>
+</head>
+<body>
+<div id="game-wrap">
+  <div id="hud">
+    <div>SCORE: <span id="score">0</span></div>
+    <div>LEVEL: <span id="level">1</span></div>
+    <div class="lives">LEBEN: <span id="lives">3</span></div>
+  </div>
+
+  <div id="canvas-holder">
+    <canvas id="game"></canvas>
+    <div id="overlay">
+      <h1>GALAXY INVADERS</h1>
+      <p id="overlay-sub">Vernichte die Invasoren, bevor sie dich erreichen.</p>
+      <p id="overlay-sub2">Steuerung: Links/Rechts halten zum Bewegen, FEUER zum Schießen.</p>
+      <div id="overlay-msg" class="big-msg hidden"></div>
+      <button id="start-btn">START</button>
+    </div>
+  </div>
+
+  <div id="controls">
+    <div class="ctrl-btn" id="left-btn">◀</div>
+    <div id="fire-btn" class="ctrl-btn">FEUER</div>
+    <div class="ctrl-btn" id="right-btn">▶</div>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
