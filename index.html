@@ -123,6 +123,13 @@
     letter-spacing:2px;
   }
   #overlay p{ opacity:0.8; margin:4px 0; font-size:14px; }
+  #presented-by{
+    opacity:0.55 !important;
+    font-size:11px !important;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin:0 0 18px 0 !important;
+  }
   #overlay .big-msg{
     font-size:clamp(20px,6vw,30px);
     color:var(--neon2);
@@ -159,6 +166,7 @@
     <canvas id="game"></canvas>
     <div id="overlay">
       <h1>GALAXY INVADERS</h1>
+      <p id="presented-by">presented by Riedel Ingenieure</p>
       <p id="overlay-sub">Vernichte die Invasoren, bevor sie dich erreichen.</p>
       <p id="overlay-sub2">Steuerung: Links/Rechts halten zum Bewegen, FEUER zum Schießen.</p>
       <div id="overlay-msg" class="big-msg hidden"></div>
