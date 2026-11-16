@@ -120,6 +120,7 @@
 
   function nextLevel() {
     state.level++;
+    state.lives = MAX_LIVES;
     updateHud();
     bullets = [];
     enemyBullets = [];
