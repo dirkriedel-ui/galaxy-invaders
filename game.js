@@ -83,6 +83,28 @@
     noise.start();
   }
 
+  function playPlayerHitSound() {
+    // low, ominous double-buzz alarm - clearly different from the enemy-hit zap
+    playTone({ freq: 180, endFreq: 55, duration: 0.22, type: "square", volume: 0.22 });
+    playTone({ freq: 150, endFreq: 40, duration: 0.28, type: "square", volume: 0.18, delay: 0.09 });
+    const ac = getAudioCtx();
+    if (!ac) return;
+    const len = Math.floor(ac.sampleRate * 0.22);
+    const buffer = ac.createBuffer(1, len, ac.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len) * 0.6;
+    const noise = ac.createBufferSource();
+    noise.buffer = buffer;
+    const filter = ac.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(500, ac.currentTime);
+    const noiseGain = ac.createGain();
+    noiseGain.gain.setValueAtTime(0.22, ac.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.22);
+    noise.connect(filter).connect(noiseGain).connect(ac.destination);
+    noise.start();
+  }
+
   // ---------- Highscores ----------
   const HIGHSCORE_KEY = "galaxyInvadersHighscores";
   const MAX_HIGHSCORES = 5;
@@ -369,6 +391,7 @@
       if (b.x < player.x + player.w && b.x + b.w > player.x && b.y < player.y + player.h && b.y + b.h > player.y) {
         b.y = H + 999;
         state.lives--;
+        playPlayerHitSound();
         updateHud();
         spawnParticles(player.x + player.w / 2, player.y + player.h / 2, "#ff3bd4", 18);
       }
