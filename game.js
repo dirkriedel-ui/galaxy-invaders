@@ -5,7 +5,8 @@
   const ctx = canvas.getContext("2d");
   const hudScore = document.getElementById("score");
   const hudLevel = document.getElementById("level");
-  const hudLives = document.getElementById("lives");
+  const hudLivesPct = document.getElementById("lives-pct");
+  const hudLivesBar = document.getElementById("lives-bar-fill");
   const overlay = document.getElementById("overlay");
   const overlayMsg = document.getElementById("overlay-msg");
   const overlaySub = document.getElementById("overlay-sub");
@@ -30,6 +31,7 @@
   window.addEventListener("orientationchange", () => setTimeout(resize, 200));
 
   // ---------- Game state ----------
+  const MAX_LIVES = 3;
   const state = {
     running: false,
     score: 0,
@@ -128,7 +130,10 @@
   function updateHud() {
     hudScore.textContent = state.score;
     hudLevel.textContent = state.level;
-    hudLives.textContent = state.lives;
+    const pct = Math.max(0, Math.round((state.lives / MAX_LIVES) * 100));
+    hudLivesPct.textContent = pct + "%";
+    hudLivesBar.style.width = pct + "%";
+    hudLivesBar.style.backgroundColor = pct > 60 ? "#ff3bd4" : pct > 30 ? "#ffd439" : "#ff3b3b";
   }
 
   function gameOver(won) {

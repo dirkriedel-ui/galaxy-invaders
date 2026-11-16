@@ -39,7 +39,24 @@
     text-shadow:0 0 6px var(--neon);
     z-index:5;
   }
-  #hud .lives{ color:var(--neon2); text-shadow:0 0 6px var(--neon2); }
+  #hud .lives{
+    color:var(--neon2); text-shadow:0 0 6px var(--neon2);
+    display:flex; align-items:center; gap:8px;
+  }
+  #lives-bar-wrap{
+    width:70px; height:10px;
+    border:1px solid rgba(255,59,212,0.6);
+    border-radius:5px;
+    overflow:hidden;
+    background:rgba(255,59,212,0.08);
+  }
+  #lives-bar-fill{
+    height:100%;
+    width:100%;
+    background:var(--neon2);
+    box-shadow:0 0 6px var(--neon2);
+    transition:width 0.25s ease, background-color 0.25s ease;
+  }
   #canvas-holder{
     position:relative;
     flex:1;
@@ -132,7 +149,10 @@
   <div id="hud">
     <div>SCORE: <span id="score">0</span></div>
     <div>LEVEL: <span id="level">1</span></div>
-    <div class="lives">LEBEN: <span id="lives">3</span></div>
+    <div class="lives">
+      LEBEN: <span id="lives-pct">100%</span>
+      <div id="lives-bar-wrap"><div id="lives-bar-fill"></div></div>
+    </div>
   </div>
 
   <div id="canvas-holder">
